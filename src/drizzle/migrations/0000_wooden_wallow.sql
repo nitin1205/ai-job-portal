@@ -1,4 +1,6 @@
-CREATE TYPE "public"."job_listings_experience_level" AS ENUM('intership', 'part-time', 'full-time');--> statement-breakpoint
+CREATE TYPE "public"."job_listings_experience_level" AS ENUM('junior', 'mid-level', 'senior');--> statement-breakpoint
+CREATE TYPE "public"."job_listings_status" AS ENUM('draft', 'published', 'delisted');--> statement-breakpoint
+CREATE TYPE "public"."job_listings_type" AS ENUM('intership', 'part-time', 'full-time');--> statement-breakpoint
 CREATE TYPE "public"."job_listings_location_requirement" AS ENUM('in-office', 'hybrid', 'remote');--> statement-breakpoint
 CREATE TYPE "public"."job_listings_wage_interval" AS ENUM('hourly', 'weekly', 'monthly', 'yearly');--> statement-breakpoint
 CREATE TYPE "public"."job_listing_application_stage" AS ENUM('denied', 'applied', 'interested', 'interviewed', 'hired');--> statement-breakpoint
@@ -23,9 +25,9 @@ CREATE TABLE "job_listings" (
 	"city" varchar,
 	"isFeatured" boolean DEFAULT false NOT NULL,
 	"locationRequirement" "job_listings_location_requirement" NOT NULL,
+	"status" "job_listings_status" DEFAULT 'draft' NOT NULL,
+	"type" "job_listings_type" NOT NULL,
 	"experienceLevel" "job_listings_experience_level" NOT NULL,
-	"status" "job_listings_experience_level" DEFAULT 'draft' NOT NULL,
-	"type" "job_listings_experience_level" NOT NULL,
 	"postedAt" timestamp with time zone,
 	"createdAt" timestamp with time zone DEFAULT now() NOT NULL,
 	"updatedAt" timestamp with time zone DEFAULT now() NOT NULL
