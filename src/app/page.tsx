@@ -52,6 +52,7 @@ export default function Home() {
             </SidebarFooter>
           </SignedIn>
         </Sidebar>
+        <main className="felx-1">sdjksakldhslkf</main>
       </AppSidebarClient>
     </SidebarProvider>
   );
