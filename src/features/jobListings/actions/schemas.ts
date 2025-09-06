@@ -7,12 +7,12 @@ import {
   wageIntervals,
 } from "@/drizzle/schema";
 
-export const jobListngSchema = z
+export const jobListingSchema = z
   .object({
     title: z.string().min(1, "Required"),
     description: z.string().min(1),
     experienceLevel: z.enum(experienceLevels),
-    locationRequirements: z.enum(locationRequirements),
+    locationRequirement: z.enum(locationRequirements),
     type: z.enum(jobListingTypes),
     wage: z.number().int().positive().min(1).nullable(),
     wageInterval: z.enum(wageIntervals).nullable(),
@@ -27,7 +27,7 @@ export const jobListngSchema = z
   })
   .refine(
     (listing) => {
-      return listing.locationRequirements === "remote" || listing.city != null;
+      return listing.locationRequirement === "remote" || listing.city != null;
     },
     {
       error: "Required for non-remote listings",
@@ -37,7 +37,7 @@ export const jobListngSchema = z
   .refine(
     (listing) => {
       return (
-        listing.locationRequirements === "remote" ||
+        listing.locationRequirement === "remote" ||
         listing.stateAbbreviation != null
       );
     },

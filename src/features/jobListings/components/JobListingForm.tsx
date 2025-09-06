@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { jobListngSchema } from "../actions/schemas";
+import { jobListingSchema } from "../actions/schemas";
 import {
   Form,
   FormControl,
@@ -38,12 +38,14 @@ import { StateSelectItems } from "./StateSelectItems";
 import { MarkdownEditor } from "@/components/markdown/MarkDownEditor";
 import { Button } from "@/components/ui/button";
 import { LoadingSwap } from "@/components/LoadingSwap";
+import { createJobListing } from "../actions/actions";
+import { toast } from "sonner";
 
 const NONE_SELECTED_VALUE = "none";
 
 export function JobListingForm() {
   const form = useForm({
-    resolver: zodResolver(jobListngSchema),
+    resolver: zodResolver(jobListingSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -53,13 +55,16 @@ export function JobListingForm() {
       wageInterval: "yearly",
       experienceLevel: "junior",
       type: "full-time",
-      locationRequirements: "in-office",
+      locationRequirement: "in-office",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof jobListngSchema>) {
-    await new Promise((res) => setTimeout(res, 1000));
-    console.log(data);
+  async function onSubmit(data: z.infer<typeof jobListingSchema>) {
+    const res = await createJobListing(data);
+
+    if (res.error) {
+      toast.error(res.message);
+    }
   }
 
   return (
@@ -188,7 +193,7 @@ export function JobListingForm() {
             />
           </div>
           <FormField
-            name="locationRequirements"
+            name="locationRequirement"
             control={form.control}
             render={({ field }) => (
               <FormItem>
