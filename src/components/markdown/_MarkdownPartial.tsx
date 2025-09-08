@@ -48,7 +48,6 @@ export function MarkdownPartial({
     checkOverflow(markdownRef.current);
   }, []);
 
-  console.log(isOverflowing);
   return (
     <>
       <div ref={markdownRef} className="max-h-[300px] overflow-hidden relative">
