@@ -36,3 +36,16 @@ export async function updateJobListing(
 
   return updatedJobListing;
 }
+
+export async function deleteJobListing(jobListingId: string) {
+  const [deletedJobListing] = await db
+    .delete(JobListingTable)
+    .where(eq(JobListingTable.id, jobListingId))
+    .returning({
+      id: JobListingTable.id,
+      organizationId: JobListingTable.organizationId,
+    });
+
+  revalidateJobListingCache(deletedJobListing);
+  return deletedJobListing;
+}

@@ -6,9 +6,14 @@ import { JobListingTable } from "@/drizzle/schema";
 import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { getJobListingOrganizationTag } from "@/features/jobListings/db/cache/jobListings";
+import { Suspense } from "react";
 
 export default function EmployerHomePage() {
-  return <h1>hi- epmloyer</h1>;
+  return (
+    <Suspense>
+      <SuspendedPage />
+    </Suspense>
+  );
 }
 
 async function SuspendedPage() {
