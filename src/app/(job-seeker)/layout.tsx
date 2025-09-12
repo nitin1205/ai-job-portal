@@ -21,6 +21,7 @@ export default function JobSeekerLayout({
     <AppSidebar
       content={
         <>
+          {sidebar}
           <SidebarNavMenuGroup
             className="mt-auto"
             items={[

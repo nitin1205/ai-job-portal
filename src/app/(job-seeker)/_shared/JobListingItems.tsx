@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 import { getJobListingGlobalTag } from "@/features/jobListings/db/cache/jobListings";
+import { getOrganizationIdTag } from "@/features/organizations/db/cache/organizations";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[]>>;
@@ -73,7 +74,7 @@ async function SuspendedComponent({ searchParams, params }: Props) {
         <Link
           className="block"
           key={jobListing.id}
-          href={`/job-listing/${jobListing.id}?${convertSearchParamsToString(
+          href={`/job-listings/${jobListing.id}?${convertSearchParamsToString(
             search
           )}`}
         >
@@ -220,7 +221,7 @@ async function getJobListings(
     );
   }
 
-  return db.query.JobListingTable.findMany({
+  const data = await db.query.JobListingTable.findMany({
     where: or(
       jobListingId
         ? and(
@@ -233,6 +234,7 @@ async function getJobListings(
     with: {
       organization: {
         columns: {
+          id: true,
           name: true,
           imageUrl: true,
         },
@@ -240,4 +242,12 @@ async function getJobListings(
     },
     orderBy: [desc(JobListingTable.isFeatured), desc(JobListingTable.postedAt)],
   });
+
+  data.forEach((listing) => {
+    if (listing != null) {
+      cacheTag(getOrganizationIdTag(listing.organization.id));
+    }
+  });
+
+  return data;
 }
