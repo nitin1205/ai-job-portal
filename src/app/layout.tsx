@@ -4,6 +4,7 @@ import "./globals.css";
 import "@mdxeditor/editor/style.css";
 import { ClerkProvider } from "@/services/clerk/components/ClerkProvider";
 import { Toaster } from "sonner";
+import { UploadThingSSR } from "@/services/uploadThing/components/UploadThingSSR";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         >
           {children}
           <Toaster />
+          <UploadThingSSR />
         </body>
       </html>
     </ClerkProvider>
