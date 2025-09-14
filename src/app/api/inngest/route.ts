@@ -9,6 +9,7 @@ import {
   clerkUpdateOrganization,
   clerkUpdateUser,
 } from "@/services/inngest/functions/clerk";
+import { createAISummaryOfUploadedResume } from "@/services/inngest/functions/resume";
 
 // Create an API that serves zero functions
 export const { GET, POST, PUT } = serve({
@@ -20,5 +21,6 @@ export const { GET, POST, PUT } = serve({
     clerkCreateOrganization,
     clerkUpdateOrganization,
     clerkDeleteOrganization,
+    createAISummaryOfUploadedResume,
   ],
 });
