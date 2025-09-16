@@ -1,10 +1,10 @@
 "use server";
 
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentAuth";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings";
+import { getJobListingIdTag } from "../../../../jobListings/db/cache/jobListings";
 import { db } from "@/drizzle/db";
 import { and, eq } from "drizzle-orm";
 import { JobListingTable, UserResumeTable } from "@/drizzle/schema";

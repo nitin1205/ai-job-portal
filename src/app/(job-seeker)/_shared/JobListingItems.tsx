@@ -24,10 +24,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { getJobListingGlobalTag } from "@/features/jobListings/db/cache/jobListings";
 import { getOrganizationIdTag } from "@/features/organizations/db/cache/organizations";
+import { getJobListingGlobalTag } from "@/features/jobListings/db/cache/jobListings";
+import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
 
 type Props = {
   searchParams: Promise<Record<string, string | string[]>>;

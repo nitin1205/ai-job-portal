@@ -1,18 +1,24 @@
 "use server";
 
-import { z } from "zod";
+import { z } from "zod/v4";
 import { and, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
 
-import { jobListingSchema } from "./schemas";
-import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
+import { jobListingAiSearchSchema, jobListingSchema } from "./schemas";
+import {
+  getCurrentOrganization,
+  getCurrentUser,
+} from "@/services/clerk/lib/getCurrentAuth";
 import {
   deleteJobListing as deleteJobListingDb,
   insertJobListing,
   updateJobListing as updateJobListingDb,
 } from "../db/jobListings";
-import { getJobListingIdTag } from "../db/cache/jobListings";
+import {
+  getJobListingGlobalTag,
+  getJobListingIdTag,
+} from "../db/cache/jobListings";
 import { db } from "@/drizzle/db";
 import { JobListingTable } from "@/drizzle/schema";
 import { hasOrgUserPermission } from "@/services/clerk/lib/OrgUserPermissions";
@@ -21,6 +27,7 @@ import {
   hasReachedMaxFeaturedJobListings,
   hasReachedMaxPublishedJobListings,
 } from "../lib/planFeatureHelpers";
+import { getMatchingJobListings } from "@/services/inngest/ai-agent/getMatchingJobListings";
 
 export async function createJobListing(
   unsafeData: z.infer<typeof jobListingSchema>
@@ -187,4 +194,54 @@ export async function deleteJobListing(jobListingId: string) {
   await deleteJobListingDb(jobListingId);
 
   redirect("/employer");
+}
+
+export async function getAiJobListingSearchResults(
+  unsafeData: z.infer<typeof jobListingAiSearchSchema>
+): Promise<
+  { error: true; message: string } | { error: false; jobIds: string[] }
+> {
+  const { success, data } = jobListingAiSearchSchema.safeParse(unsafeData);
+
+  if (!success) {
+    return {
+      error: true,
+      message: "There was an error processing your search query",
+    };
+  }
+
+  const { userId } = await getCurrentUser();
+  if (userId == null) {
+    return {
+      error: true,
+      message: "You need an account to use AI job search",
+    };
+  }
+
+  const allListings = await getPublicJobListings();
+  const matchedListings = await getMatchingJobListings(
+    data.query,
+    allListings,
+    {
+      maxNumberOfJobs: 10,
+    }
+  );
+
+  if (matchedListings.length === 0) {
+    return {
+      error: true,
+      message: "No job match your search criteria",
+    };
+  }
+
+  return { error: false, jobIds: matchedListings };
+}
+
+async function getPublicJobListings() {
+  "use cache";
+  cacheTag(getJobListingGlobalTag());
+
+  return db.query.JobListingTable.findMany({
+    where: eq(JobListingTable.status, "published"),
+  });
 }

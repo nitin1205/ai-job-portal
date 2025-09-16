@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 import {
   experienceLevels,
@@ -46,3 +46,7 @@ export const jobListingSchema = z
       path: ["stateAbbreviation"],
     }
   );
+
+export const jobListingAiSearchSchema = z.object({
+  query: z.string().min(1, "Required"),
+});
