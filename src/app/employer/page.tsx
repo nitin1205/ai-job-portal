@@ -5,8 +5,8 @@ import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
 import { JobListingTable } from "@/drizzle/schema";
 import { desc, eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { getJobListingOrganizationTag } from "@/features/jobListings/db/cache/jobListings";
 import { Suspense } from "react";
+import { getJobListingOrganizationTag } from "@/features/jobListings/db/cache/jobListings";
 
 export default function EmployerHomePage() {
   return (

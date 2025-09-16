@@ -1,6 +1,8 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import Link from "next/link";
+import { ChevronRightIcon } from "lucide-react";
 
 import { JobListingStatus, JobListingTable } from "@/drizzle/schema";
 import {
@@ -17,8 +19,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { formatJobListingStatus } from "@/features/jobListings/lib/formatters";
-import { ChevronRightIcon } from "lucide-react";
-import Link from "next/link";
 
 type JobListing = Pick<typeof JobListingTable.$inferSelect, "title" | "id"> & {
   applicationCount: number;

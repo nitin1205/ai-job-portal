@@ -24,7 +24,7 @@ export function LoadingSwap({
       </div>
       <div
         className={cn(
-          "col-start-1 col-end-1 row-start-1 row-end-1",
+          "col-start-1 col-end-1 row-start-1 flex row-end-1 items-center justify-center",
           isLoading ? "visible" : "invisible",
           className
         )}

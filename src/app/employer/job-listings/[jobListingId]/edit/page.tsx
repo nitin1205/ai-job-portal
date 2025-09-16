@@ -1,14 +1,14 @@
 import { Suspense } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { JobListingForm } from "@/features/jobListings/components/JobListingForm";
 import { getCurrentOrganization } from "@/services/clerk/lib/getCurrentAuth";
 import { notFound } from "next/navigation";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings";
 import { db } from "@/drizzle/db";
 import { and, eq } from "drizzle-orm";
 import { JobListingTable } from "@/drizzle/schema";
+import { JobListingForm } from "@/features/jobListings/components/JobListingForm";
+import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings";
 
 type Props = {
   params: Promise<{ jobListingId: string }>;
