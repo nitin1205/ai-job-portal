@@ -6,11 +6,9 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { IsBreakPoint } from "@/components/IsBreakPoint";
-import { LoadingSpinner } from "../../../../../jobListings/components/LoadingSpinner";
 import { SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { ClientSheet } from "../_ClientSheet";
 import { cacheTag } from "next/dist/server/use-cache/cache-tag";
-import { getJobListingIdTag } from "../../../../../jobListings/db/cache/jobListings";
 import { db } from "@/drizzle/db";
 import { and, eq } from "drizzle-orm";
 import {
@@ -25,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { convertSearchParamsToString } from "@/lib/converSearchParamsToString";
 import { XIcon } from "lucide-react";
-import { JobListingBadges } from "../../../../../jobListings/components/JobListingBadges";
 import { MarkdownRenderer } from "@/components/markdown/MarkdownRenderer";
 import { getCurrentUser } from "@/services/clerk/lib/getCurrentAuth";
 import {
@@ -48,6 +45,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { NewJobListingApplicationForm } from "@/features/jobListingApplications/components/NewJobListingApplicationForm";
+import { LoadingSpinner } from "@/features/jobListings/components/LoadingSpinner";
+import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings";
+import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
 
 export default function JobListingPage({
   params,

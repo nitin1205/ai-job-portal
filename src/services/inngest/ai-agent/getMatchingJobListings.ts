@@ -26,7 +26,7 @@ const listingSchema = z.object({
 export async function getMatchingJobListings(
   prompt: string,
   jobListings: z.infer<typeof listingSchema>[],
-  { maxNumberOfJobs }: { maxNumberOfJobs?: number }
+  { maxNumberOfJobs }: { maxNumberOfJobs?: number } = {}
 ) {
   const NO_JOBS = "NO_JOBS";
 
