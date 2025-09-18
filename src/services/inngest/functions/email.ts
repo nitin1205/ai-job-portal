@@ -1,12 +1,13 @@
+import { and, eq, gte } from "drizzle-orm";
+import { subDays } from "date-fns";
+import { GetEvents } from "inngest";
+
 import { db } from "@/drizzle/db";
 import { inngest } from "../client";
-import { and, eq, gte } from "drizzle-orm";
 import {
   JobListingTable,
   UserNotificationSettingsTable,
 } from "@/drizzle/schema";
-import { subDays } from "date-fns";
-import { GetEvents } from "inngest";
 import { getMatchingJobListings } from "../ai-agent/getMatchingJobListings";
 import { resend } from "@/services/resend/client";
 import DailyJobListingEmail from "@/services/resend/components/DailyJobListingEmail";
@@ -45,7 +46,7 @@ export const prepareDailyUserJobListingNotifications = inngest.createFunction(
         where: and(
           gte(
             JobListingTable.postedAt,
-            subDays(new Date(event.ts ?? Date.now()), -1)
+            subDays(new Date(event.ts ?? Date.now()), 1)
           ),
           eq(JobListingTable.status, "published")
         ),
