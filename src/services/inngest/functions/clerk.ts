@@ -5,11 +5,16 @@ import { inngest } from "../client";
 import { env } from "@/data/env/server";
 import { deleteUser, insertUser, updateUser } from "@/features/users/db/users";
 import { insertUserNotificationSettings } from "@/features/users/db/userNotificationSettings";
+
 import {
-  deleteOrganization,
-  insertOrganization,
+  deleteOrganizationUserSettings,
+  insertOrganizationUserSettings,
+} from "@/features/organizations/db/organizationUserSettings";
+import {
   updateOrganization,
-} from "@/features/organizations/db/users";
+  insertOrganization,
+  deleteOrganization,
+} from "@/features/organizations/db/organizations";
 
 function verifyWebhook({
   raw,
@@ -198,6 +203,64 @@ export const clerkDeleteOrganization = inngest.createFunction(
       }
 
       await deleteOrganization(id);
+    });
+  }
+);
+
+export const clerkCreateOrganizationMembership = inngest.createFunction(
+  {
+    id: "clerk/create-organization-user-settings",
+    name: "Clerk - Create Organization User Settings",
+  },
+  {
+    event: "clerk/organizationMembership.created",
+  },
+  async ({ event, step }) => {
+    await step.run("verify-hook", async () => {
+      try {
+        verifyWebhook(event.data);
+      } catch {
+        throw new NonRetriableError("Invalid webhook");
+      }
+    });
+
+    await step.run("create-organization-user-settings", async () => {
+      const userId = event.data.data.public_user_data.user_id;
+      const orgId = event.data.data.organization.id;
+
+      await insertOrganizationUserSettings({
+        userId,
+        organizationId: orgId,
+      });
+    });
+  }
+);
+
+export const clerkDeleteOrganizationMembership = inngest.createFunction(
+  {
+    id: "clerk/delete-organization-user-settings",
+    name: "Clerk - Delete Organization User Settings",
+  },
+  {
+    event: "clerk/organizationMembership.deleted",
+  },
+  async ({ event, step }) => {
+    await step.run("verify-hook", async () => {
+      try {
+        verifyWebhook(event.data);
+      } catch {
+        throw new NonRetriableError("Invalid webhook");
+      }
+    });
+
+    await step.run("delete-organization-user-settings", async () => {
+      const userId = event.data.data.public_user_data.user_id;
+      const orgId = event.data.data.organization.id;
+
+      await deleteOrganizationUserSettings({
+        userId,
+        organizationId: orgId,
+      });
     });
   }
 );
