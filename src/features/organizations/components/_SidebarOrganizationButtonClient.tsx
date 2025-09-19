@@ -71,7 +71,7 @@ export function SidebarOrganizationButtonClient({
           <Building2Icon className="mr-1" /> Manage Organization
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/employer/user-settings/notifications">
+          <Link href="/employer/user-settings">
             <UserRoundCogIcon className="mr-1" /> User Settings
           </Link>
         </DropdownMenuItem>

@@ -3,8 +3,10 @@ import { serve } from "inngest/next";
 import { inngest } from "@/services/inngest/client";
 import {
   clerkCreateOrganization,
+  clerkCreateOrganizationMembership,
   clerkCreateUser,
   clerkDeleteOrganization,
+  clerkDeleteOrganizationMembership,
   clerkDeleteUser,
   clerkUpdateOrganization,
   clerkUpdateUser,
@@ -26,6 +28,8 @@ export const { GET, POST, PUT } = serve({
     clerkCreateOrganization,
     clerkUpdateOrganization,
     clerkDeleteOrganization,
+    clerkCreateOrganizationMembership,
+    clerkDeleteOrganizationMembership,
     createAISummaryOfUploadedResume,
     rankApplication,
     prepareDailyUserJobListingNotifications,
