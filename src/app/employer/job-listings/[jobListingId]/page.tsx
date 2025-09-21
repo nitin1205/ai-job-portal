@@ -23,7 +23,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { db } from "@/drizzle/db";
-import { JobListingStatus, JobListingTable } from "@/drizzle/schema";
+import {
+  JobListingApplicationTable,
+  JobListingStatus,
+  JobListingTable,
+} from "@/drizzle/schema";
 import { JobListingBadges } from "@/features/jobListings/components/JobListingBadges";
 import { getJobListingIdTag } from "@/features/jobListings/db/cache/jobListings";
 import { formatJobListingStatus } from "@/features/jobListings/lib/formatters";
@@ -40,6 +44,14 @@ import {
   toggleJobListingFeatured,
   toggleJobListingStatus,
 } from "@/features/jobListings/actions/actions";
+import { Separator } from "@/components/ui/separator";
+import { getJobListingApplicationJobListingTag } from "@/features/jobListingApplications/db/cache/jobListingApplications";
+import { getUserIdTag } from "@/features/users/db/cache/users";
+import { getUserResumeIdTag } from "@/features/users/db/cache/userResumes";
+import {
+  ApplicationTable,
+  SkeletonApplicationTable,
+} from "@/features/jobListingApplications/components/ApplicationTable";
 
 type Props = {
   params: Promise<{ jobListingId: string }>;
@@ -64,7 +76,7 @@ async function SuspendedPage({ params }: Props) {
   if (jobListing == null) return notFound();
 
   return (
-    <div className="space-y-6 max-w-6xl max-auto p-4 @container">
+    <div className="space-y-6 max-w-6xl mx-auto p-4 @container">
       <div className="flex items-center justify-between gap-4 @max-4xl:flex-col @max-4xl:items-start">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">
@@ -118,6 +130,15 @@ async function SuspendedPage({ params }: Props) {
         }
         dialogTitle="Description"
       />
+
+      <Separator />
+
+      <div className="space-y-6">
+        <h2 className="text-xl font-semibold">Applications</h2>
+        <Suspense fallback={<SkeletonApplicationTable />}>
+          <Applications jobListingId={jobListingId} />
+        </Suspense>
+      </div>
     </div>
   );
 }
@@ -269,6 +290,37 @@ function featuredToggleButtonText(isFeatured: boolean) {
   );
 }
 
+async function Applications({ jobListingId }: { jobListingId: string }) {
+  const applications = await getJobListingApplications(jobListingId);
+  return (
+    <ApplicationTable
+      applications={applications.map((a) => ({
+        ...a,
+        user: {
+          ...a.user,
+          resume: a.user.resume
+            ? {
+                ...a.user.resume,
+                markdownSummary: a.user.resume.aiSummary ? (
+                  <MarkdownRenderer source={a.user.resume.aiSummary} />
+                ) : null,
+              }
+            : null,
+        },
+        coverLetterMarkdown: a.coverLetter ? (
+          <MarkdownRenderer source={a.coverLetter} />
+        ) : null,
+      }))}
+      canUpdateRating={await hasOrgUserPermission(
+        "job_listing_applications:change_rating"
+      )}
+      canUpdateStage={await hasOrgUserPermission(
+        "job_listing_applications:change_stage"
+      )}
+    />
+  );
+}
+
 async function getJobListing(jobListingId: string, organizationId: string) {
   "use cache";
   cacheTag(getJobListingIdTag(jobListingId));
@@ -279,4 +331,44 @@ async function getJobListing(jobListingId: string, organizationId: string) {
       eq(JobListingTable.organizationId, organizationId)
     ),
   });
+}
+
+async function getJobListingApplications(jobListingId: string) {
+  "use cache";
+  cacheTag(getJobListingApplicationJobListingTag(jobListingId));
+
+  const data = await db.query.JobListingApplicationTable.findMany({
+    where: eq(JobListingApplicationTable.jobListingId, jobListingId),
+    columns: {
+      coverLetter: true,
+      createdAt: true,
+      stage: true,
+      rating: true,
+      jobListingId: true,
+    },
+    with: {
+      user: {
+        columns: {
+          id: true,
+          name: true,
+          imageUrl: true,
+        },
+        with: {
+          resume: {
+            columns: {
+              resumeFileUrl: true,
+              aiSummary: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  data.forEach(({ user }) => {
+    cacheTag(getUserIdTag(user.id));
+    cacheTag(getUserResumeIdTag(user.id));
+  });
+
+  return data;
 }
