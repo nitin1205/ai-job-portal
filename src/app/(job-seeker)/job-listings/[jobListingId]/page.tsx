@@ -229,7 +229,7 @@ async function ApplyButton({ jobListingId }: { jobListingId: string }) {
       <DialogTrigger asChild>
         <Button>Apply</Button>
       </DialogTrigger>
-      <DialogContent className="md:max-w-3xl max-h[calc(100%-2rem)] overflow-hidden flex flex-col">
+      <DialogContent className="md:max-w-3xl max-h-[calc(100%-2rem)] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle>Application</DialogTitle>
           <DialogDescription>
